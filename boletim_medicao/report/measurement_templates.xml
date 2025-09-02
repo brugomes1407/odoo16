@@ -1,0 +1,74 @@
+<odoo>
+    <template id="bm_sheet_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Boletim de Medição <span t-esc="doc.name"/></h2>
+                        <p>
+                            <strong>Cliente:</strong> <span t-esc="doc.partner_id.display_name"/> <br/>
+                            <strong>Período:</strong>
+                            <span t-esc="doc.period_month"/>/<span t-esc="doc.period_year"/>
+                            <br/>
+                            <strong>Datas:</strong> <span t-esc="doc.date_start"/> - <span t-esc="doc.date_end"/> <br/>
+                            <strong>Projeto:</strong> <span t-esc="doc.project_id.display_name or ''"/> <br/>
+                            <strong>Pedido de Venda:</strong> <span t-esc="doc.sale_id.name or ''"/> <br/>
+                            <strong>Contrato:</strong> <span t-esc="doc.contract_id.name or ''"/>
+                        </p>
+                        <p>
+                            <strong>Local de Obra:</strong>
+                            <span t-esc="doc.site_partner_id.display_name or ''"/><br/>
+                            <t t-if="doc.site_street"><span t-esc="doc.site_street"/></t>
+                            <t t-if="doc.site_street2">, <span t-esc="doc.site_street2"/></t>
+                            <t t-if="doc.site_city">, <span t-esc="doc.site_city"/></t>
+                            <t t-if="doc.site_state_id"> - <span t-esc="doc.site_state_id.name"/></t>
+                            <t t-if="doc.site_zip">, CEP: <span t-esc="doc.site_zip"/></t>
+                            <t t-if="doc.site_country_id"> - <span t-esc="doc.site_country_id.name"/></t><br/>
+                            <t t-if="doc.site_reference"><em>Referência:</em> <span t-esc="doc.site_reference"/></t>
+                        </p>
+                        <table class="table table-sm o_main_table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Descrição</th>
+                                    <th>Produto</th>
+                                    <th>Unid.</th>
+                                    <th t-if="doc.measurement_type == 'quantity'">Qtd. Medida</th>
+                                    <th t-if="doc.measurement_type == 'percent'">% Medido</th>
+                                    <th>Qtd. Aprovada</th>
+                                    <th>Qtd. Aprov. Anterior</th>
+                                    <th>Preço Unit.</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="doc.line_ids" t-as="l">
+                                    <td t-esc="l.sequence"/>
+                                    <td t-esc="l.name"/>
+                                    <td t-esc="l.product_id.display_name or ''"/>
+                                    <td t-esc="l.product_uom.name or ''"/>
+                                    <td t-if="doc.measurement_type == 'quantity'"><t t-esc="l.measured_qty"/></td>
+                                    <td t-if="doc.measurement_type == 'percent'"><t t-esc="l.measured_percent"/>%</td>
+                                    <td t-esc="l.approved_qty"/>
+                                    <td t-esc="l.previous_approved_qty"/>
+                                    <td t-esc="l.price_unit"/>
+                                    <td t-esc="l.subtotal"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div class="col-6"/>
+                            <div class="col-6">
+                                <table class="table table-sm">
+                                    <tr><td>Subtotal</td><td class="text-right"><t t-esc="doc.amount_subtotal"/></td></tr>
+                                    <tr><td>Retenção</td><td class="text-right"><t t-esc="doc.retention_amount"/></td></tr>
+                                    <tr><td><strong>Total</strong></td><td class="text-right"><strong><t t-esc="doc.amount_total"/></strong></td></tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,9 @@
+<odoo>
+    <record id="seq_bm_sheet" model="ir.sequence">
+        <field name="name">Boletim de Medição</field>
+        <field name="code">bm.sheet</field>
+        <field name="prefix">BM/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

@@ -1,0 +1,133 @@
+<odoo>
+    <record id="view_bm_sheet_tree" model="ir.ui.view">
+        <field name="name">bm.sheet.tree</field>
+        <field name="model">bm.sheet</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="state"/>
+                <field name="partner_id"/>
+                <field name="project_id"/>
+                <field name="sale_id"/>
+                <field name="contract_id"/>
+                <field name="period_month"/>
+                <field name="period_year"/>
+                <field name="amount_total"/>
+                <field name="invoice_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_bm_sheet_form" model="ir.ui.view">
+        <field name="name">bm.sheet.form</field>
+        <field name="model">bm.sheet</field>
+        <field name="arch" type="xml">
+            <form string="Boletim de Medição">
+                <header>
+                    <button name="action_set_to_draft" string="Voltar a Rascunho" type="object" states="submitted,approved" class="oe_highlight"/>
+                    <button name="action_submit" string="Enviar" type="object" states="draft" class="btn-primary"/>
+                    <button name="action_approve" string="Aprovar" type="object" states="submitted" class="btn-primary"/>
+                    <button name="action_create_invoice" string="Criar Fatura" type="object" states="approved,submitted" class="oe_highlight"/>
+                    <button name="action_cancel" string="Cancelar" type="object" states="draft,submitted,approved"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,invoiced,cancelled"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Identificação">
+                            <field name="name" readonly="1"/>
+                            <field name="partner_id" required="1"/>
+                            <field name="project_id"/>
+                            <field name="sale_id"/>
+                            <field name="contract_id"/>
+                        </group>
+                        <group string="Período (Mensal)">
+                            <field name="period_month" required="1"/>
+                            <field name="period_year" required="1"/>
+                            <field name="date_start" readonly="1"/>
+                            <field name="date_end" readonly="1"/>
+                            <field name="measurement_type"/>
+                            <field name="retention_percent"/>
+                        </group>
+                    </group>
+
+                    <group string="Local de Obra">
+                        <group>
+                            <field name="site_partner_id" options="{'no_create_edit': False}"/>
+                            <field name="site_reference"/>
+                            <field name="site_street"/>
+                            <field name="site_street2"/>
+                        </group>
+                        <group>
+                            <field name="site_city"/>
+                            <field name="site_state_id"/>
+                            <field name="site_zip"/>
+                            <field name="site_country_id"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Linhas">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="sheet_measurement_type" invisible="1"/>
+                                    <field name="sequence"/>
+                                    <field name="name"/>
+                                    <field name="sale_line_id"/>
+                                    <field name="contract_line_id"/>
+                                    <field name="product_id" readonly="1"/>
+                                    <field name="product_uom" readonly="1"/>
+                                    <field name="price_unit" readonly="1"/>
+                                    <field name="measured_qty" attrs="{'invisible':[('sheet_measurement_type','!=','quantity')]}"/>
+                                    <field name="measured_percent" attrs="{'invisible':[('sheet_measurement_type','!=','percent')]}"/>
+                                    <field name="approved_qty" readonly="1"/>
+                                    <field name="previous_approved_qty" readonly="1"/>
+                                    <field name="subtotal" readonly="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Totais">
+                            <group>
+                                <field name="amount_subtotal" readonly="1"/>
+                                <field name="retention_amount" readonly="1"/>
+                                <field name="amount_total" readonly="1"/>
+                                <field name="invoice_id" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_bm_sheet" model="ir.actions.act_window">
+        <field name="name">Boletins de Medição</field>
+        <field name="res_model">bm.sheet</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+    </record>
+
+    <record id="view_bm_sheet_search" model="ir.ui.view">
+        <field name="name">bm.sheet.search</field>
+        <field name="model">bm.sheet</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="sale_id"/>
+                <field name="contract_id"/>
+                <field name="project_id"/>
+                <filter name="this_month" string="Este mês" domain="[('period_year','=',context_today().year),('period_month','=',str(context_today().month))]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter name="grp_state" string="Status" context="{'group_by':'state'}"/>
+                    <filter name="grp_period_year" string="Ano" context="{'group_by':'period_year'}"/>
+                    <filter name="grp_period_month" string="Mês" context="{'group_by':'period_month'}"/>
+                    <filter name="grp_partner" string="Cliente" context="{'group_by':'partner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <menuitem id="menu_bm_root" name="Medição" parent="sale.sale_menu_root" sequence="60"/>
+    <menuitem id="menu_bm_sheet" name="Boletins de Medição" parent="menu_bm_root" action="action_bm_sheet" sequence="10"/>
+</odoo>
